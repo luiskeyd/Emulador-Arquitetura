@@ -1,6 +1,7 @@
+# Imports
 import customtkinter as ctk
 from emulador import CPU
-import debug
+from debug import Debugger  
 
 # Inicia a aparência da interface
 ctk.set_appearance_mode("dark")
@@ -12,25 +13,32 @@ app.title("Emulador Assembly")
 app.geometry("800x600")
 
 # Frame superior com botões
-topo_frame = ctk.CTkFrame(app)
-topo_frame.pack(pady=10, padx=10, fill="x")
+fundo = app.cget("fg_color")
+topo_frame = ctk.CTkFrame(app, fg_color=fundo)
+topo_frame.pack(pady=10, padx=10)
 
-button_rodar = ctk.CTkButton(topo_frame, text="Executar", command=lambda: executar_codigo())
-button_rodar.pack(side="left", padx=5)
+# Para centralizar os botões no topo_frame, use pack com expand e fill para topo_frame, e pack os botões com side="left"
+# Uma forma simples de centralizar botões: usar um frame interno centralizado
 
-button_debug = ctk.CTkButton(
-    topo_frame,
-    text="Debug",
-    command=lambda: debug.abrir_debug(texto_codigo.get("1.0", "end"))
-)
-button_debug.pack(side="left", padx=5)
+centralizador = ctk.CTkFrame(topo_frame, fg_color=fundo)
+centralizador.pack(expand=True)
 
-# Entrada de código
+button_rodar = ctk.CTkButton(centralizador, text="Executar", command=lambda: executar_codigo())
+button_rodar.pack(side="left", padx=10)
+
+# Cria o widget de texto para entrada antes de criar o Debugger
 texto_codigo = ctk.CTkTextbox(app, height=250)
 texto_codigo.pack(pady=10, padx=10, fill="both", expand=True)
 
-# Passa referência para debug
-debug.set_texto_codigo_ref(texto_codigo)
+# Cria a instância do debugger, passando o widget texto_codigo para referência
+debugger = Debugger(texto_codigo)
+
+button_debug = ctk.CTkButton(
+    centralizador,
+    text="Debug",
+    command=lambda: debugger.abrir_debug(texto_codigo.get("1.0", "end"))
+)
+button_debug.pack(side="left", padx=10)
 
 # Área de saída
 area_saida = ctk.CTkLabel(app, text="Saída:")
@@ -49,8 +57,8 @@ def mostrar_registradores():
     texto_saida.insert("1.0", resultado)
 
 def executar_codigo():
-    texto_saida.delete("1.0", "end")
-    codigo = texto_codigo.get("1.0", "end")
+    texto_saida.delete("1.0", "end")  # Limpar a tela
+    codigo = texto_codigo.get("1.0", "end")  # Pegar o código fornecido
 
     try:
         cpu.reset()

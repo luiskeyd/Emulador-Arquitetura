@@ -23,8 +23,8 @@ class CPU:
         self.programa = []
 
     def reset(self):
-        for r in self.registers:
-            self.registers[r] = 0
+        for i in self.registers:
+            self.registers[i] = 0
         self.registers['SP'] = 0xFFFE
         self.flags = dict.fromkeys(self.flags, 0)
         self.memory = [0] * 65536
