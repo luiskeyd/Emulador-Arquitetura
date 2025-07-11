@@ -14,13 +14,7 @@ class CPU:
             'IP': 0,
         }
 
-        self.flags = {
-            'ZF': 0,
-            'CF': 0,
-            'SF': 0,
-            'OF': 0,
-        }
-
+        
         self.memory = [0] * 65536
         self.programa = []
 
@@ -28,7 +22,6 @@ class CPU:
         for i in self.registers:
             self.registers[i] = 0
         self.registers['SP'] = 0xFFFE
-        self.flags = dict.fromkeys(self.flags, 0)
         self.memory = [0] * 65536
         self.programa = []
 
