@@ -3,7 +3,7 @@ from instrucoes import interpretar
 class CPU:
     def __init__(self):
         self.registers = {
-            'AX': 0,
+            "AX": 0,
             'BX': 0,
             'CX': 0,
             'DX': 0,

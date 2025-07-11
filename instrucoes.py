@@ -1,16 +1,21 @@
+
 def interpretar(cpu, linha):
     partes = linha.split()
     if not partes:
         return
 
     instrucao = partes[0].upper()
-
+        
     if instrucao == "MOV":
         dst, src = map(lambda x: x.strip(',').upper(), partes[1:])
-        if src in cpu.registers:
+        if dst in cpu.registers:
+          if src in cpu.registers:
             cpu.registers[dst] = cpu.registers[src]
-        elif src.isdigit():
+            print("dois registraores")
+          elif src.isdigit():
             cpu.registers[dst] = int(src)
+        else:
+            raise SyntaxError("registrador nao existe, animal")
 
     elif instrucao == "ADD":
         dst, src = map(lambda x: x.strip(",").upper(), partes[1:])
@@ -30,3 +35,6 @@ def interpretar(cpu, linha):
         codigo = partes[1]
         if codigo == "0":
             raise StopIteration("Execução finalizada com INT 0")
+    
+    else:
+        raise SyntaxError("CASA DO CARALHO")
