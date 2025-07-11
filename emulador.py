@@ -3,7 +3,7 @@ from instrucoes import interpretar
 class CPU:
     def __init__(self):
         self.registers = {
-            "AX": 0,
+            'AX': 0,
             'BX': 0,
             'CX': 0,
             'DX': 0,
@@ -40,8 +40,5 @@ class CPU:
     def executar(self):
         while self.registers['IP'] < len(self.programa):
             instrucao = self.programa[self.registers['IP']]
-            self.executar_instrucoes(instrucao)
-            self.registers['IP'] += 1
-
-    def executar_instrucoes(self, linha):
-        interpretar(self, linha)
+            interpretar(self, instrucao)
+            self.registers['IP'] += 1    

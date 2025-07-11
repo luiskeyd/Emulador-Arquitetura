@@ -29,7 +29,7 @@ button_rodar.pack(side="left", padx=10)
 # Cria o widget de texto para entrada antes de criar o Debugger
 texto_codigo = ctk.CTkTextbox(app, height=200)
 texto_codigo.pack(pady=10, padx=10, fill="both", expand=True)
-texto_codigo.configure(font=("Arial", 18))
+texto_codigo.configure(font=("Arial", 16))
 
 # Cria a instância do debugger, passando o widget texto_codigo para referência
 debugger = Debugger(texto_codigo)
@@ -47,7 +47,7 @@ area_saida.pack(anchor="w", padx=10)
 
 texto_saida = ctk.CTkTextbox(app, height=170)
 texto_saida.pack(pady=10, padx=10, fill="x")
-texto_saida.configure(font=("Arial", 18))
+texto_saida.configure(font=("Arial", 16))
 
 cpu = CPU()
 
@@ -61,7 +61,12 @@ def mostrar_registradores():
 def executar_codigo():
     texto_saida.delete("1.0", "end")  # Limpar a tela
     codigo = texto_codigo.get("1.0", "end")  # Pegar o código fornecido
+    
     texto_saida.tag_config("erro", foreground="red")
+
+    if not codigo.strip():
+        texto_saida.insert("1.0", "Digite algo", "erro")
+        return
 
     try:
         cpu.reset()

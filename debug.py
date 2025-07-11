@@ -13,12 +13,20 @@ class Debugger:
         self.texto_codigo = texto_codigo_widget
 
     def abrir_debug(self, codigo_str):
+        if not codigo_str.strip():
+            return
+            
+
+
+        # Abrir apenas uma janela de debug
         if self.janela_debug and self.janela_debug.winfo_exists():
             self.janela_debug.focus()
             self.janela_debug.lift()
             return
 
         self.cpu.reset()
+        
+            
         self.cpu.carregar_programa(codigo_str)
         self.debug_ip = 0
 
@@ -94,6 +102,3 @@ class Debugger:
         resultado = "\n".join(linhas)
         self.texto_debug_saida.delete("1.0", "end")
         self.texto_debug_saida.insert("1.0", resultado)
-
-
-
