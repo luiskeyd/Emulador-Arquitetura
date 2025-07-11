@@ -94,3 +94,6 @@ class Debugger:
         resultado = "\n".join(linhas)
         self.texto_debug_saida.delete("1.0", "end")
         self.texto_debug_saida.insert("1.0", resultado)
+
+
+
