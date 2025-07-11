@@ -1,7 +1,10 @@
+# Import
 from instrucoes import interpretar
 
+# CPU em si
 class CPU:
     def __init__(self):
+        # Registradores
         self.registers = {
             'AX': 0,
             'BX': 0,
@@ -9,7 +12,6 @@ class CPU:
             'DX': 0,
             'SP': 0xFFFE,
             'IP': 0,
-            'CS': 0,
         }
 
         self.flags = {

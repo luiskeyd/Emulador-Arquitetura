@@ -1,3 +1,12 @@
+# Mostrar registradores ao final do programa
+def mostrar_registradores(cpu):
+    linhas = []
+    for k, v in cpu.registers.items():
+        linhas.append(f"{k} = {v}")
+    resultado = "\n".join(linhas)
+    return resultado
+
+# Interpretação do código
 def interpretar(cpu, linha):
     partes = linha.split() # Divide a instrução em um vetor
     instrucao = partes[0].upper() # Pega a instrução
