@@ -9,6 +9,45 @@ def mostrar_registradores(cpu):
     resultado = "\n".join(linhas)
     return resultado
 
+def atualiza_flags(cpu, a, b, resultado, operacao = "sub"):
+
+    # ZF (Zero Flag): ativa se o resultado for zero
+    if resultado == 0:
+        cpu.flags["ZF"] = 1
+    else:
+        cpu.flags["ZF"] = 0
+
+    # SF (Sign Flag): ativa se o resultado for negativo
+    if resultado < 0:
+        cpu.flags["SF"] = 1
+    else:
+        cpu.flags["SF"] = 0
+
+    # CF (Carry Flag): em ADD, ativa se passou de 65535 (estouro); em SUB, se deu negativo no unsigned
+    if operacao == "add":
+        if resultado > 0xFFFF:
+            cpu.flags["CF"] = 1
+        else:
+            cpu.flags["CF"] = 0
+    elif operacao == "sub":
+        if a < b:
+            cpu.flags["CF"] = 1
+        else:
+            cpu.flags["CF"] = 0
+
+    # OF (Overflow Flag): em ADD/SUB com números com sinal, ativa se o sinal ficou errado
+    if operacao == "add":
+        if (a >= 0 and b >= 0 and resultado < 0) or (a < 0 and b < 0 and resultado >= 0):
+            cpu.flags["OF"] = 1
+        else:
+            cpu.flags["OF"] = 0
+    elif operacao == "sub":
+        if (a >= 0 and b < 0 and resultado < 0) or (a < 0 and b >= 0 and resultado >= 0):
+            cpu.flags["OF"] = 1
+        else:
+            cpu.flags["OF"] = 0
+
+
 # Interpretação do código
 def interpretar(cpu, linha):
     partes = linha.split() # Divide a instrução em um vetor
@@ -24,9 +63,8 @@ def interpretar(cpu, linha):
     if instrucao == "MOV":
         if len(partes) != 3:
             raise SyntaxError(f"{instrucao} requer exatos dois argumentos!")
-        if dst in cpu.registers:
-            if src in cpu.registers:
-                if dst not in ("IP", "SP") and src not in ("IP", "SP"):
+        if dst in cpu.registers and dst not in("IP", "SP"):
+            if src in cpu.registers and src not in ("IP", "SP"):
                     cpu.registers[dst] = cpu.registers[src]
             elif src.isnumeric():
                 cpu.registers[dst] = int(src)
@@ -39,14 +77,20 @@ def interpretar(cpu, linha):
     elif instrucao == "ADD":
         if len(partes) != 3:
             raise SyntaxError(f"{instrucao} requer exatos dois argumentos!")
-        if dst in cpu.registers:
-            if src in cpu.registers:
-                if dst not in ("IP", "SP") and src not in ("IP", "SP"):
-                    cpu.registers[dst] += cpu.registers[src]
+        if dst in cpu.registers and  dst not in ("IP", "SP"):
+            a = cpu.registers[dst]
+            if src in cpu.registers and src not in ("IP", "SP"):
+                cpu.registers[dst] += cpu.registers[src]
+                b = cpu.registers[src]
+
             elif src.isnumeric():
                 cpu.registers[dst] += int(src)
+                b = int(src)
+            
             else:
                 raise ValueError("Valor inválido")
+            resultado = a + b
+            atualiza_flags(cpu, a, b, resultado, operacao="add")
         else:
             raise SyntaxError("Registrador inválido") 
 
@@ -54,14 +98,18 @@ def interpretar(cpu, linha):
     elif instrucao == "SUB":
         if len(partes) != 3:
             raise SyntaxError(f"{instrucao} requer exatos dois argumentos!")
-        if dst in cpu.registers:
-            if src in cpu.registers:
-                if dst not in ("IP", "SP") and src not in ("IP", "SP"):
-                    cpu.registers[dst] -= cpu.registers[src]
+        if dst in cpu.registers and dst not in ("IP", "SP"):
+            a = cpu.registers[dst]
+            if src in cpu.registers and src not in ("IP", "SP"):
+                cpu.registers[dst] -= cpu.registers[src]
+                b = cpu.registers[src]
             elif src.isnumeric():
                 cpu.registers[dst] -= int(src)
+                b = int(src)
             else:
                 raise ValueError("Valor inválido")
+            resultado = a - b
+            atualiza_flags(cpu, a ,b, resultado, operacao="sub")
         else:
             raise SyntaxError("Registrador inválido") 
         
@@ -69,18 +117,15 @@ def interpretar(cpu, linha):
         if len(partes) != 3:
             raise SyntaxError(f"{instrucao} requer exatos dois argumentos!")
         if dst in cpu.registers and dst not in("IP", "SP"):
+            a = cpu.registers[dst]
             if src in cpu.registers and src not in ("IP", "SP"):
-                if cpu.registers[dst] == cpu.registers[src]:
-                    cpu.flags["ZF"] = 1
-                else:
-                    cpu.flags["ZF"] = 0
+                b = cpu.registers[src]
             elif src.isnumeric():
-                if cpu.registers[dst] == int(src):
-                    cpu.flags["ZF"] = 1
-                else:
-                    cpu.flags["ZF"] = 0
+                b = int(src)
             else:
                 raise ValueError("Valor errado!")
+            resultado = a-b
+            atualiza_flags(cpu, a, b, resultado, operacao="sub")
         else:
             raise SyntaxError("Registrador Inválido!")
     # Instrução INT
