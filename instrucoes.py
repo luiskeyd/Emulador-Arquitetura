@@ -1,6 +1,7 @@
 # Mostrar registradores ao final do programa
 def mostrar_registradores(cpu):
     linhas = []
+    linhas.append("--- REGISTERS ---\n")
     for k, v in cpu.registers.items():
         linhas.append(f"{k} = {v}")
     linhas.append("\n--- FLAGS ---\n")

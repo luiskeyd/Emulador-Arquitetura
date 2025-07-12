@@ -11,7 +11,7 @@ ctk.set_default_color_theme("dark-blue")
 # Janela principal
 app = ctk.CTk()
 app.title("Emulador Assembly")
-app.geometry("800x600")
+app.geometry("900x700")
 
 # Frame superior com botões
 fundo = app.cget("fg_color")
@@ -25,9 +25,38 @@ button_rodar = ctk.CTkButton(centralizador, text="Executar", command=lambda: exe
 button_rodar.pack(side="left", padx=10)
 
 # Cria o widget de texto para entrada
-texto_codigo = ctk.CTkTextbox(app, height=200)
-texto_codigo.pack(pady=10, padx=10, fill="both", expand=True)
+# texto_codigo = ctk.CTkTextbox(app, height=200)
+# texto_codigo.pack(pady=10, padx=10, fill="both", expand=True)
+# texto_codigo.configure(font=("Arial", 16))
+
+# # Cria o caixa de texto para registradores.
+# texto_registradores = ctk.CTkTextbox(app, height = 200)
+# texto_registradores.pack(anchor = "e", pady = 10, padx = 10, fill = "y", expand= True)
+# texto_registradores.configure(font=("Arial", 16))
+
+#posicionado as duas caixas
+
+# Frame para colocar as duas caixas lado a lado
+frame_caixas = ctk.CTkFrame(app, fg_color=fundo)
+frame_caixas.pack(padx=10, pady=10, fill="both", expand=True)
+
+# Configura para expandir
+frame_caixas.grid_columnconfigure(0, weight=150)
+frame_caixas.grid_columnconfigure(1, weight=1)
+frame_caixas.grid_rowconfigure(0, weight=1)
+
+# Caixa de código à esquerda
+texto_codigo = ctk.CTkTextbox(frame_caixas)
+texto_codigo.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 texto_codigo.configure(font=("Arial", 16))
+
+
+# Caixa de registradores à direita
+texto_registradores = ctk.CTkTextbox(frame_caixas)
+texto_registradores.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+texto_registradores.configure(font=("Arial", 16))
+
+
 
 # Debugger
 debugger = Debugger(texto_codigo)
@@ -63,7 +92,11 @@ def executar_codigo():
         cpu.reset()
         cpu.carregar_programa(codigo)
         cpu.executar()
-        texto_saida.insert("1.0", mostrar_registradores(cpu))
+        texto_registradores.configure(state="normal") 
+        texto_registradores.delete("1.0", "end")
+        texto_registradores.insert("1.0", mostrar_registradores(cpu))
+        texto_registradores.configure(state="disabled")
+        # texto_saida.insert("1.0", mostrar_registradores(cpu))
     except StopIteration as fim:
         texto_saida.insert("1.0", mostrar_registradores(cpu))
         texto_saida.insert("end", f"\n\n{fim}")

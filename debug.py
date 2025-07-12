@@ -78,9 +78,11 @@ class Debugger:
         button_next = ctk.CTkButton(self.janela_debug, text="Próxima Instrução", command=self.executar_proxima_instrucao)
         button_next.pack(pady=10)
 
+        self.texto_debug.configure(state="normal")
         self.texto_debug.delete("1.0", "end")
         for linha in self.cpu.programa:
             self.texto_debug.insert("end", linha + "\n")
+        self.texto_debug.configure(state="disabled")
 
         self.texto_debug.tag_config("linha_atual", background="yellow", foreground="black")
         self.executar_proxima_instrucao()
@@ -124,5 +126,7 @@ class Debugger:
     # Mostrar registradores no debug
     def mostrar_registradores(self):
         resultado = mostrar_registradores(self.cpu)
+        self.saida_debug.configure(state="normal")
         self.saida_debug.delete("1.0", "end")
         self.saida_debug.insert("1.0", resultado)
+        self.saida_debug.configure(state="disabled")
