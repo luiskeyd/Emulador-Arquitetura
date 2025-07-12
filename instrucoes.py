@@ -3,6 +3,9 @@ def mostrar_registradores(cpu):
     linhas = []
     for k, v in cpu.registers.items():
         linhas.append(f"{k} = {v}")
+    linhas.append("\n--- FLAGS ---\n")
+    for k, v in cpu.flags.items():
+        linhas.append(f"{k} = {v}")
     resultado = "\n".join(linhas)
     return resultado
 
@@ -61,7 +64,25 @@ def interpretar(cpu, linha):
                 raise ValueError("Valor inválido")
         else:
             raise SyntaxError("Registrador inválido") 
-            
+        
+    elif instrucao == "CMP":
+        if len(partes) != 3:
+            raise SyntaxError(f"{instrucao} requer exatos dois argumentos!")
+        if dst in cpu.registers and dst not in("IP", "SP"):
+            if src in cpu.registers and src not in ("IP", "SP"):
+                if cpu.registers[dst] == cpu.registers[src]:
+                    cpu.flags["ZF"] = 1
+                else:
+                    cpu.flags["ZF"] = 0
+            elif src.isnumeric():
+                if cpu.registers[dst] == int(src):
+                    cpu.flags["ZF"] = 1
+                else:
+                    cpu.flags["ZF"] = 0
+            else:
+                raise ValueError("Valor errado!")
+        else:
+            raise SyntaxError("Registrador Inválido!")
     # Instrução INT
     elif instrucao == "INT":
         if len(partes) != 2:
