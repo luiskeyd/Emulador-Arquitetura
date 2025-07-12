@@ -49,10 +49,11 @@ texto_saida.configure(font=("Arial", 16))
 cpu = CPU()
 
 def executar_codigo():
+    texto_saida._textbox.config(state="normal") # Descongelar a tela
     texto_saida.delete("1.0", "end")  # Limpar a tela
     codigo = texto_codigo.get("1.0", "end")  # Pegar o código fornecido
     texto_saida.tag_config("erro", foreground="red") # Mensagem em cor vermelha para erro
-
+    
     # Código em branco
     if not codigo.strip():
         texto_saida.insert("1.0", "Digite algo", "erro")
@@ -64,6 +65,8 @@ def executar_codigo():
         cpu.carregar_programa(codigo)
         cpu.executar()
         texto_saida.insert("1.0", mostrar_registradores(cpu))
+        texto_saida._textbox.config(state="disabled") # Não permite editar o código
+        
     except StopIteration as fim:
         texto_saida.insert("1.0", mostrar_registradores(cpu))
         texto_saida.insert("end", f"\n\n{fim}")

@@ -13,7 +13,6 @@ class CPU:
             'SP': 0xFFFE,
             'IP': 0,
         }
-
         
         self.memory = [0] * 65536
         self.programa = []

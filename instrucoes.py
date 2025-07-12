@@ -10,12 +10,12 @@ def mostrar_registradores(cpu):
 def interpretar(cpu, linha):
     partes = linha.split() # Divide a instrução em um vetor
     instrucao = partes[0].upper() # Pega a instrução
-
+    
     # Divide a instrução em dois argumentos pra manipulação posterior
     if instrucao not in ("PUSH", "POP", "INT"):
         dst, src = map(lambda x: x.strip(",").upper(), partes[1:])
-        if dst=="SP" or src=="SP":
-            raise ReferenceError("SP não pode ser manipulado")
+        if dst=="SP" or src=="SP" or dst == "IP" or src == "IP":
+            raise ReferenceError("Esse registrador não pode ser manipulado")
     
     #Instrução MOV
     if instrucao == "MOV":
@@ -25,7 +25,7 @@ def interpretar(cpu, linha):
             if src in cpu.registers:
                 if dst not in ("IP", "SP") and src not in ("IP", "SP"):
                     cpu.registers[dst] = cpu.registers[src]
-            elif src.isnumeric():
+            elif src.lstrip("-").isdigit():
                 cpu.registers[dst] = int(src)
             else:
                 raise ValueError("Valor inválido")
@@ -40,7 +40,7 @@ def interpretar(cpu, linha):
             if src in cpu.registers:
                 if dst not in ("IP", "SP") and src not in ("IP", "SP"):
                     cpu.registers[dst] += cpu.registers[src]
-            elif src.isnumeric():
+            elif src.lstrip("-").isdigit():
                 cpu.registers[dst] += int(src)
             else:
                 raise ValueError("Valor inválido")
@@ -55,7 +55,7 @@ def interpretar(cpu, linha):
             if src in cpu.registers:
                 if dst not in ("IP", "SP") and src not in ("IP", "SP"):
                     cpu.registers[dst] -= cpu.registers[src]
-            elif src.isnumeric():
+            elif src.lstrip("-").isdigit():
                 cpu.registers[dst] -= int(src)
             else:
                 raise ValueError("Valor inválido")
