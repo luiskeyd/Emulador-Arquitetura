@@ -55,7 +55,7 @@ def interpretar(cpu, linha):
     instrucao = partes[0].upper() # Pega a instrução
 
     # Divide a instrução em dois argumentos pra manipulação posterior
-    if instrucao not in ("PUSH", "POP", "INT"):
+    if instrucao not in ("PUSH", "POP", "INT", "JZ", "JMP"):
         dst, src = map(lambda x: x.strip(",").upper(), partes[1:])
         if dst=="SP" or src=="SP":
             raise ReferenceError("SP não pode ser manipulado")
@@ -71,6 +71,7 @@ def interpretar(cpu, linha):
                 cpu.registers[dst] = int(src)
             else:
                 raise ValueError("Valor inválido")
+            cpu.registers['IP'] += 1  
         else:
             raise SyntaxError("Registrador inválido")  
 
@@ -92,6 +93,7 @@ def interpretar(cpu, linha):
                 raise ValueError("Valor inválido")
             resultado = a + b
             atualiza_flags(cpu, a, b, resultado, operacao="add")
+            cpu.registers['IP'] += 1  
         else:
             raise SyntaxError("Registrador inválido") 
 
@@ -111,6 +113,7 @@ def interpretar(cpu, linha):
                 raise ValueError("Valor inválido")
             resultado = a - b
             atualiza_flags(cpu, a ,b, resultado, operacao="sub")
+            cpu.registers['IP'] += 1  
         else:
             raise SyntaxError("Registrador inválido") 
         
@@ -127,6 +130,7 @@ def interpretar(cpu, linha):
                 raise ValueError("Valor errado!")
             resultado = a-b
             atualiza_flags(cpu, a, b, resultado, operacao="sub")
+            cpu.registers['IP'] += 1
         else:
             raise SyntaxError("Registrador Inválido!")
     # Instrução INT
@@ -148,6 +152,7 @@ def interpretar(cpu, linha):
             valor = cpu.registers[reg]
             cpu.memory[addr] = valor & 0xFF
             cpu.memory[addr + 1] = (valor >> 8) & 0xFF
+        cpu.registers['IP'] += 1  
 
     # Instrução POP
     elif instrucao == "POP":
@@ -158,6 +163,21 @@ def interpretar(cpu, linha):
             high = cpu.memory[addr + 1]
             cpu.registers[reg] = (high << 8) | low
             cpu.registers['SP'] += 2
+        cpu.registers['IP'] += 1  
+    
+    #incondicional
+    elif instrucao == "JMP":
+        destino = int(partes[1])
+        cpu.registers["IP"] = destino
+    
+    #condicional: se for igual
+    elif instrucao == "JZ":
+        destino = int(partes[1])
+        if cpu.flags["ZF"] == 1:
+            cpu.registers["IP"] = destino
+        else:
+            cpu.registers["IP"] +=1
+
     
     # Instrução inválida
     else:

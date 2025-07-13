@@ -8,7 +8,6 @@ class Debugger:
     def __init__(self, codigo):
         self.cpu = CPU()
         self.janela_debug = None
-        self.ip_debug = 0
         self.saida_debug = None
         self.texto_debug = None
         self.codigo = codigo
@@ -48,7 +47,7 @@ class Debugger:
         # Preparar CPU
         self.cpu.reset()
         self.cpu.carregar_programa(codigo)
-        self.ip_debug = 0
+        self.cpu.registers["IP"] = 0
         self.limpar_destaque()
         
         # Marcar linha atual
@@ -93,17 +92,18 @@ class Debugger:
         self.limpar_destaque()
 
         try:
-            if self.ip_debug < len(self.cpu.programa):
-                linha = self.cpu.programa[self.ip_debug]
+            ip = self.cpu.registers["IP"]
+            if ip < len(self.cpu.programa):
+                linha = self.cpu.programa[ip]
 
-                linha_inicio = f"{self.ip_debug + 1}.0"
-                linha_fim = f"{self.ip_debug + 1}.end"
+                linha_inicio = f"{ip + 1}.0"
+                linha_fim = f"{ip+ 1}.end"
                 if self.texto_debug and self.texto_debug.winfo_exists():
                     self.texto_debug.tag_add("linha_atual", linha_inicio, linha_fim)
 
                 interpretar(self.cpu, linha)
-                self.cpu.registers['IP'] = self.ip_debug
-                self.ip_debug += 1
+                if self.cpu.registers['IP'] == ip:
+                    self.cpu.registers["IP"] += 1
 
                 self.mostrar_registradores()
             else:

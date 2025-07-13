@@ -44,4 +44,4 @@ class CPU:
         while self.registers['IP'] < len(self.programa):
             instrucao = self.programa[self.registers['IP']]
             interpretar(self, instrucao)
-            self.registers['IP'] += 1    
+              

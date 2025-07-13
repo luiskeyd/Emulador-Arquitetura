@@ -98,9 +98,11 @@ def executar_codigo():
         texto_registradores.configure(state="disabled")
         # texto_saida.insert("1.0", mostrar_registradores(cpu))
     except StopIteration as fim:
-        texto_saida.insert("1.0", mostrar_registradores(cpu))
-        texto_saida.insert("end", f"\n\n{fim}")
+        texto_registradores.delete("1.0", "end")
+        texto_registradores.insert("1.0", mostrar_registradores(cpu))
+        texto_registradores.insert("end", f"\n\n{fim}")
     except Exception as e:
-        texto_saida.insert("1.0", str(e), "erro")
+        texto_registradores.delete("1.0", "end")
+        texto_registradores.insert("1.0", str(e), "erro")
 
 app.mainloop()
