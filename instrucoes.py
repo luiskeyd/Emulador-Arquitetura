@@ -10,6 +10,12 @@ def mostrar_registradores(cpu):
     resultado = "\n".join(linhas)
     return resultado
 
+def ehNegativo(a):
+    sinal = (a >> 15)
+    if sinal == 1:
+        return True
+    return False
+
 def atualiza_flags(cpu, a, b, resultado, operacao = "sub"):
 
     # ZF (Zero Flag): ativa se o resultado for zero
@@ -19,14 +25,14 @@ def atualiza_flags(cpu, a, b, resultado, operacao = "sub"):
         cpu.flags["ZF"] = 0
 
     # SF (Sign Flag): ativa se o resultado for negativo
-    if resultado < 0:
+    if ehNegativo(resultado):
         cpu.flags["SF"] = 1
     else:
         cpu.flags["SF"] = 0
 
     # CF (Carry Flag): em ADD, ativa se passou de 65535 (estouro); em SUB, se deu negativo no unsigned
     if operacao == "add":
-        if resultado > 0xFFFF:
+        if ehNegativo(resultado):
             cpu.flags["CF"] = 1
         else:
             cpu.flags["CF"] = 0
@@ -38,12 +44,12 @@ def atualiza_flags(cpu, a, b, resultado, operacao = "sub"):
 
     # OF (Overflow Flag): em ADD/SUB com números com sinal, ativa se o sinal ficou errado
     if operacao == "add":
-        if (a >= 0 and b >= 0 and resultado < 0) or (a < 0 and b < 0 and resultado >= 0):
+        if (a >= 0 and b >= 0 and ehNegativo(resultado)) or (a < 0 and b < 0 and not(ehNegativo(resultado))):
             cpu.flags["OF"] = 1
         else:
             cpu.flags["OF"] = 0
     elif operacao == "sub":
-        if (a >= 0 and b < 0 and resultado < 0) or (a < 0 and b >= 0 and resultado >= 0):
+        if (a >= 0 and b < 0 and ehNegativo(resultado)) or (a < 0 and b >= 0 and not(ehNegativo(resultado))):
             cpu.flags["OF"] = 1
         else:
             cpu.flags["OF"] = 0
